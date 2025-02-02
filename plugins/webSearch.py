@@ -39,7 +39,7 @@ class WebSearch(Plugin):
                     id=url.replace("ac/", ""),
                     offset=1,
                     plugin=self,
-                    score=1,
+                    score=2,
                     title=f"open '{result}'"
                 )
                 for i in range(len(suggestions)): #list all results from suggestions
