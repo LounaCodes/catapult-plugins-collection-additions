@@ -33,23 +33,24 @@ class HashPlugin(Plugin):
         copy_text_to_clipboard(id)
 
     def search(self, query):
-        hash_method, text = query.split(maxsplit=1)
-        if hash_method in hash_methods:
-            h = hash_methods[hash_method]
-            h.update(text.encode())
-            if "shake" in hash_method:
-                result = h.hexdigest(32)
-            else:
-                result = h.hexdigest()
-            yield SearchResult(
-                description=f"{hash_method} of {text}",
-                fuzzy=False,
-                icon=lookup_icon(
-                    "password-manager", "preferences-desktop-user-password"
-                ),
-                id=result,
-                offset=0,
-                plugin=self,
-                score=1,
-                title=result,
-            )
+        if len(query.split()) > 1:
+            hash_method, text = query.split(maxsplit=1)
+            if hash_method in hash_methods:
+                h = hash_methods[hash_method]
+                h.update(text.encode())
+                if "shake" in hash_method:
+                    result = h.hexdigest(32)
+                else:
+                    result = h.hexdigest()
+                yield SearchResult(
+                    description=f"{hash_method} of {text}",
+                    fuzzy=False,
+                    icon=lookup_icon(
+                        "password-manager", "preferences-desktop-user-password"
+                    ),
+                    id=result,
+                    offset=0,
+                    plugin=self,
+                    score=1,
+                    title=result,
+                )
