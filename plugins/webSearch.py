@@ -14,16 +14,20 @@ class WebSearch(Plugin):
 
     def search(self, query):
         query = query.strip()
-        if "." in query:
+        if "." in query and len(query.split()) == 1:
+            if "https://" in query:
+                pass
+            else:
+                query = "https://" + query
             yield SearchResult(
-                description=f"open {query.split()[1]}",
+                description=f"open {query}",
                 fuzzy=False,
                 icon="internet-web-browser-symbolic",
-                id=query.split()[1], #open just the url in the browser
+                id=query,
                 offset=1,
                 plugin=self,
                 score=1,
-                title=query.split()[1]
+                title=query
             )
             return
         elif len(query.split()) > 1:
