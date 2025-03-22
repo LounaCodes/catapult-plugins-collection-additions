@@ -78,8 +78,7 @@ Example: **web was that the bite of 87?**
 
 ### Demo
 
-_please put a demo here ;-;_
-
+![hash](https://github.com/LounaCodes/catapult-plugins-collection-additions/blob/main/web-search-demo.gif)
 Installation:
 
 ```bash
