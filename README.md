@@ -63,3 +63,26 @@ Installation:
 ```bash
 curl https://raw.githubusercontent.com/CRAG666/catapult-plugins-collection/main/plugins/hash.py --output ~/.local/share/catapult/plugins/hash.py
 ```
+
+## WebSearch
+
+### Usage
+
+Just write `web` and then whatever search term you want to use on DuckDuckGo, or select one of the search suggestions from the list.
+You can also just write out an URL and it will open in your default browser
+
+Format: `web <search term>`
+
+Example: **web was that the bite of 87?**
+     or: **archlinux.org**
+
+### Demo
+
+_please put a demo here ;-;_
+
+Installation:
+
+```bash
+curl https://raw.githubusercontent.com/LounaCodes/catapult-plugins-collection-additions/refs/heads/main/plugins/webSearch.py --output ~/.local/share/catapult/plugins/hash.py
+```
+change this when merged↑
