@@ -1,8 +1,9 @@
 import webbrowser
 import requests
+import threading
+import queue
 from catapult.api import Plugin
 from catapult.api import SearchResult
-from catapult.api import PreferencesItem
 
 class WebSearch(Plugin):
 
@@ -15,9 +16,7 @@ class WebSearch(Plugin):
     def search(self, query):
         query = query.strip()
         if "." in query and len(query.split()) == 1:
-            if "https://" in query:
-                pass
-            else:
+            if "https://" not in query:
                 query = "https://" + query
             yield SearchResult(
                 description=f"open {query}",
@@ -34,9 +33,22 @@ class WebSearch(Plugin):
             startTerm, result = query.split(maxsplit=1)
             if startTerm == "web":
                 url = f"https://duckduckgo.com/ac/?q={result}"
-                response = requests.get(url) #make request, returning a json
-                suggestions = response.json()
-                yield SearchResult( #first result should only be query
+                suggestions_queue = queue.Queue()
+
+                def fetch_suggestions():
+                    try:
+                        response = requests.get(url)  # Make request in a separate thread
+                        response.raise_for_status()
+                        suggestions_queue.put(response.json())  # Put result in queue
+                    except requests.RequestException as e:
+                        suggestions_queue.put([])  # Return empty list on error
+
+                # Start fetching in a separate thread
+                thread = threading.Thread(target=fetch_suggestions, daemon=True)
+                thread.start()
+
+                # Yield the initial search option
+                yield SearchResult(
                     description="search on DuckDuckGo",
                     fuzzy=False,
                     icon="internet-web-browser-symbolic",
@@ -46,14 +58,20 @@ class WebSearch(Plugin):
                     score=2,
                     title=f"open '{result}'"
                 )
-                for i in range(len(suggestions)): #list all results from suggestions
+
+                # Wait for results to be available in the queue
+                thread.join()  # This makes sure we wait for the request to complete
+                suggestions = suggestions_queue.get()
+
+                # Yield all suggestions
+                for suggestion in suggestions:
                     yield SearchResult(
                         description="search on DuckDuckGo",
                         fuzzy=False,
                         icon="internet-web-browser-symbolic",
-                        id=f"https://duckduckgo.com/?q={suggestions[i]['phrase']}",
+                        id=f"https://duckduckgo.com/?q={suggestion['phrase']}",
                         offset=2,
                         plugin=self,
                         score=1,
-                        title=f"open '{suggestions[i]['phrase']}'"
+                        title=f"open '{suggestion['phrase']}'"
                     )
